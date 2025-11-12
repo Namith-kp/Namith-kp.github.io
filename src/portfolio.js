@@ -50,7 +50,7 @@ const skillsSection = {
   subTitle: "CRAZY ENGINEERING STUDENT WHO WANTS TO EXPLORE EVERY TECH STACK",
   skills: [
     emoji(
-      "⚡ Develop highly interactive Front end / UI / UX for your web and mobile applications"
+      "⚡ Developed highly interactive Front end / UI / UX for my web and mobile applications"
     ),
     
     emoji(
@@ -143,7 +143,7 @@ const educationInfo = {
   display: true, // Set false to hide this section, defaults to true
   schools: [
     {
-      schoolName: "Sai Vidya Institute of Technology",
+      schoolName: "Sai Vidya Institute of Technology, Bengaluru, India",
       logo: require("./assets/images/collage.png"),
       subHeader: "Bachelor of Engineering in Information Science and Engineering",
       duration: "July 2022 - September 2026",
@@ -154,7 +154,7 @@ const educationInfo = {
       // ]
     },
     {
-      schoolName: "Shree Vani Pre University College",
+      schoolName: "Shree Vani Pre University College, Bengaluru, India",
       logo: require("./assets/images/shree.png"),
       subHeader: "Pre University Course in Computer Science (PCMCs)",
       duration: "June 2020 - April 2022",
@@ -313,11 +313,24 @@ const achievementSection = {
 
   achievementsCards: [
     {
+      title: "AI Fundamentals Certification",
+      subtitle:
+        "Completed Certification from IBM for AI Fundamentals",
+      image: require("./assets/images/ai-ibm.png"),
+      imageAlt: "AI Logo",
+      footerLink: [
+        {
+          name: "View Certification",
+          url: "https://drive.google.com/file/d/1I25vJYmu6PeLCdWlkn0FbvvY1yi4O2L-/view?usp=sharing"
+        }
+      ]
+    },
+    {
       title: "UNIX & LINUX Certification",
       subtitle:
         "Completed Certification from Infosys Springboard for UNIX & LINUX OS Fundamentals",
       image: require("./assets/images/8.png"),
-      imageAlt: "Google Assistant Action Logo",
+      imageAlt: "Linux Logo",
       footerLink: [
         {
           name: "View Certification",
