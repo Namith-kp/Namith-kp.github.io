@@ -33,11 +33,11 @@ const greeting = {
 // Social Media Links
 
 const socialMediaLinks = {
-  github: "https://github.com/Namith-kp",
-  linkedin: "https://www.linkedin.com/in/namith-kp/",
+  github: "https://github.openinapp.link/ybgm0",
+  linkedin: "https://linkedin.openinapp.co/rwqtq",
   gmail: "kpnamith@gmail.com",
   instagram: "",
-  youtube: "https://www.youtube.com/@_robastic?sub_confirmation=1",
+  youtube: "https://yt.openinapp.co/ac4u4",
   // Instagram, Twitter and Kaggle are also supported in the links!
   // To customize icons and social links, tweak src/components/SocialMedia
   display: true // Set true to display this section, defaults to false
@@ -239,7 +239,7 @@ const bigProjects = {
       footerLink: [
         {
           name: "View Project",
-          url: "https://www.youtube.com/watch?v=nJvqp3LVMXc&t=105s"
+          url: "https://yt.openinapp.co/i2luk"
         }
         //  you can add extra buttons here.
       ]
@@ -251,7 +251,7 @@ const bigProjects = {
       footerLink: [
         {
           name: "View Project",
-          url: "https://github.com/Namith-kp/Grow-With-Me-AI"
+          url: "https://github.openinapp.link/gq9w7"
         }
       ]
     },
@@ -262,7 +262,7 @@ const bigProjects = {
       footerLink: [
         {
           name: "View Project",
-          url: "https://github.com/Namith-kp/Student-Result-Portal"
+          url: "https://github.openinapp.link/91pji"
         }
       ]
     },
@@ -273,7 +273,7 @@ const bigProjects = {
       footerLink: [
         {
           name: "View Project",
-          url: "https://github.com/Namith-kp/Flick-Control"
+          url: "https://github.openinapp.link/vtqbj"
         }
       ]
     },
