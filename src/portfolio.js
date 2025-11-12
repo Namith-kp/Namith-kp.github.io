@@ -23,7 +23,7 @@ const greeting = {
   username: "Namith K P",
   title: "Hi, I'm Namith",
   subTitle: emoji(
-    "A Passionate Engineering Student 🚀 having an experience of building Web and Mobile applications with JavaScript / Reactjs / Nodejs / React Native and some other cool libraries and frameworks."
+    "A Passionate Engineering Student 🚀 having an experience of building Web and Mobile applications with JavaScript / React.js / Node.js / React Native and some other cool libraries and frameworks."
   ),
   resumeLink:
     "", // Set to empty to hide the button
