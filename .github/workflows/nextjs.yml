@@ -71,6 +71,18 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+        env:
+          NEXT_PUBLIC_PROJECT_1_IMAGE: ${{ secrets.NEXT_PUBLIC_PROJECT_1_IMAGE }}
+          NEXT_PUBLIC_PROJECT_2_IMAGE: ${{ secrets.NEXT_PUBLIC_PROJECT_2_IMAGE }}
+          NEXT_PUBLIC_PROJECT_3_IMAGE: ${{ secrets.NEXT_PUBLIC_PROJECT_3_IMAGE }}
+          NEXT_PUBLIC_PROJECT_1_LINK: ${{ secrets.NEXT_PUBLIC_PROJECT_1_LINK }}
+          NEXT_PUBLIC_PROJECT_2_LINK: ${{ secrets.NEXT_PUBLIC_PROJECT_2_LINK }}
+          NEXT_PUBLIC_PROJECT_3_LINK: ${{ secrets.NEXT_PUBLIC_PROJECT_3_LINK }}
+          NEXT_PUBLIC_VIEW_ALL_PROJECTS_LINK: ${{ secrets.NEXT_PUBLIC_VIEW_ALL_PROJECTS_LINK }}
+          NEXT_PUBLIC_CERT_1_LINK: ${{ secrets.NEXT_PUBLIC_CERT_1_LINK }}
+          NEXT_PUBLIC_CERT_2_LINK: ${{ secrets.NEXT_PUBLIC_CERT_2_LINK }}
+          NEXT_PUBLIC_CERT_3_LINK: ${{ secrets.NEXT_PUBLIC_CERT_3_LINK }}
+          NEXT_PUBLIC_CERT_4_LINK: ${{ secrets.NEXT_PUBLIC_CERT_4_LINK }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
