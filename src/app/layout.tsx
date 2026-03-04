@@ -20,7 +20,34 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "Namith K P - Portfolio",
-  description: "Engineering Student & Web Developer",
+  description: "Engineering Student & Web Developer.",
+  keywords: ["Namith K P", "Portfolio", "Web Developer", "Software Engineer", "React", "Next.js"],
+  authors: [{ name: "Namith K P" }],
+  creator: "Namith K P",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://namith-kp.github.io/",
+    title: "Namith K P - Portfolio",
+    description: "Creative Developer & Engineering Student building digital experiences.",
+    siteName: "Namith K P Portfolio",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Namith K P - Portfolio",
+    description: "Creative Developer & Engineering Student building digital experiences.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
