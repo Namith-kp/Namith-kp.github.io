@@ -20,24 +20,25 @@ export default function ScrollyCanvas() {
     // Load images on mount
     useEffect(() => {
         const loadImages = async () => {
-            const loadedImages: HTMLImageElement[] = [];
+            const promises: Promise<HTMLImageElement | null>[] = [];
 
             for (let i = 0; i < FRAME_COUNT; i++) {
-                const img = new Image();
-                const frameNum = i.toString().padStart(3, '0');
-                img.src = `/sequence/frame_${frameNum}_delay-0.041s.png`;
+                const promise = new Promise<HTMLImageElement | null>((resolve) => {
+                    const img = new Image();
+                    const frameNum = i.toString().padStart(3, '0');
+                    img.src = `/sequence/frame_${frameNum}_delay-0.041s.png`;
 
-                await new Promise((resolve) => {
-                    img.onload = () => {
-                        loadedImages.push(img);
-                        resolve(null);
-                    };
+                    img.onload = () => resolve(img);
                     img.onerror = () => {
                         console.error(`Failed to load image index ${i}`);
                         resolve(null); // Continue even if one fails
                     };
                 });
+                promises.push(promise);
             }
+
+            const results = await Promise.all(promises);
+            const loadedImages = results.filter((img): img is HTMLImageElement => img !== null);
 
             setImages(loadedImages);
             setImagesLoaded(true);
