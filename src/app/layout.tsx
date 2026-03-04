@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://namith-kp.github.io/",
+    url: "https://namithkp.me",
     title: "Namith K P - Portfolio",
     description: "Creative Developer & Engineering Student building digital experiences.",
     siteName: "Namith K P Portfolio",
