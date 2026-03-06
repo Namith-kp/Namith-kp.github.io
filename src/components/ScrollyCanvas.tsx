@@ -181,7 +181,7 @@ export default function ScrollyCanvas() {
                 {!firstFrameLoaded && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#121212] flex-col gap-4">
                         <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Experience</p>
+                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Portfolio</p>
                     </div>
                 )}
 
