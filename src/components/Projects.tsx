@@ -10,40 +10,40 @@ const projects = [
         title: 'Grow With Me',
         category: 'Web Application',
         description: 'AI Powered Co-Founder Finding Platform for Founders to build a start-up companies',
-        image: process.env.NEXT_PUBLIC_PROJECT_1_IMAGE || '',
-        link: process.env.NEXT_PUBLIC_PROJECT_1_LINK || '#',
+        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=75&w=800&auto=format&fit=crop',
+        link: 'https://github.com/Namith-kp/Grow-With-Me-AI',
     },
     {
         id: 2,
         title: 'Flick Control',
         category: 'IOT Home Automation',
         description: 'A Gesture Controlled Home Automation using Opencv in Python',
-        image: process.env.NEXT_PUBLIC_PROJECT_2_IMAGE || '',
-        link: process.env.NEXT_PUBLIC_PROJECT_2_LINK || '#',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=75&w=800&auto=format&fit=crop',
+        link: 'https://github.com/Namith-kp/Flick-Control',
     },
     {
         id: 3,
         title: 'Student Result Management System',
         category: 'Web Application',
         description: 'A Student Result Management System using PHP and MySQL',
-        image: process.env.NEXT_PUBLIC_PROJECT_3_IMAGE || '',
-        link: process.env.NEXT_PUBLIC_PROJECT_3_LINK || '#',
+        image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?q=75&w=800&auto=format&fit=crop',
+        link: 'https://github.com/Namith-kp/Student-Result-Portal',
     },
     {
         id: 4,
         title: 'Rosetta',
         category: 'Web Application',
         description: 'Rosetta is an intelligent database interaction platform. It bridges the gap between raw MySQL data and non-technical users by allowing them to query, visualize, and manipulate data using conversational natural language.',
-        image: process.env.NEXT_PUBLIC_PROJECT_4_IMAGE || '',
-        link: process.env.NEXT_PUBLIC_PROJECT_4_LINK || '#',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=75&w=800&auto=format&fit=crop',
+        link: 'https://github.com/Namith-kp/Rosetta',
     },
     {
         id: 5,
         title: 'Offline AI Legal Assistant',
         category: 'Web Application',
         description: 'An offline AI legal assistant for the Bharatiya Nyaya Sanhita (BNS) 2023. Built using a local RAG pipeline, FastAPI, and ChromaDB, featuring a modern web UI with live pipeline inspection.',
-        image: process.env.NEXT_PUBLIC_PROJECT_5_IMAGE || '',
-        link: process.env.NEXT_PUBLIC_PROJECT_5_LINK || '#',
+        image: 'https://images.unsplash.com/photo-1575505586569-646b2ca898fc?q=75&w=800&auto=format&fit=crop',
+        link: 'https://github.com/Namith-kp/bns-rag-assistant',
     }
 ];
 
@@ -172,7 +172,7 @@ export default function Projects() {
                         className="group relative w-[85vw] sm:w-[60vw] md:w-[45vw] lg:w-[450px] shrink-0 snap-center h-[450px] md:h-[550px] rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 hover:bg-white/10 transition-colors duration-500 cursor-pointer overflow-hidden"
                     >
                         <a
-                            href={process.env.NEXT_PUBLIC_VIEW_ALL_PROJECTS_LINK || 'https://github.com/Namith-kp'}
+                            href={'https://github.com/Namith-kp?tab=repositories'}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="absolute inset-0 flex flex-col items-center justify-center gap-6 p-8 text-center z-10"
