@@ -8,8 +8,9 @@ const FRAME_COUNT = 192;
 export default function ScrollyCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [images, setImages] = useState<HTMLImageElement[]>([]);
-    const [imagesLoaded, setImagesLoaded] = useState(false);
+    const imagesRef = useRef<(HTMLImageElement | null)[]>(new Array(FRAME_COUNT).fill(null));
+    const [firstFrameLoaded, setFirstFrameLoaded] = useState(false);
+    const currentFrameIndex = useRef(0);
 
     // Scroll Progress (0 to 1) from the container
     const { scrollYProgress } = useScroll({
@@ -20,28 +21,40 @@ export default function ScrollyCanvas() {
     // Load images on mount
     useEffect(() => {
         const loadImages = async () => {
-            const promises: Promise<HTMLImageElement | null>[] = [];
+            // 1. Load the very first frame immediately and await it
+            const firstImg = new Image();
+            firstImg.src = `/sequence/frame_000_delay-0.041s.png`;
 
+<<<<<<< HEAD
             for (let i = 0; i < FRAME_COUNT; i++) {
                 const promise = new Promise<HTMLImageElement | null>((resolve) => {
                     const img = new Image();
                     const frameNum = i.toString().padStart(3, '0');
                     img.src = `/sequence/frame_${frameNum}_delay-0.041s.webp`;
+=======
+            await new Promise((resolve) => {
+                firstImg.onload = () => resolve(firstImg);
+                firstImg.onerror = () => resolve(null);
+            });
+>>>>>>> ace2cf467e7d0eee329b3f69e26d931477fb632b
 
-                    img.onload = () => resolve(img);
-                    img.onerror = () => {
-                        console.error(`Failed to load image index ${i}`);
-                        resolve(null); // Continue even if one fails
-                    };
-                });
-                promises.push(promise);
+            imagesRef.current[0] = firstImg;
+            setFirstFrameLoaded(true);
+
+            // 2. Load the rest in the background concurrently (no await!)
+            for (let i = 1; i < FRAME_COUNT; i++) {
+                const img = new Image();
+                const frameNum = i.toString().padStart(3, '0');
+                img.src = `/sequence/frame_${frameNum}_delay-0.041s.png`;
+
+                img.onload = () => {
+                    imagesRef.current[i] = img;
+                    // If the user is currently looking at this frame but it was previously missing, draw it now.
+                    if (i === currentFrameIndex.current) {
+                        requestAnimationFrame(() => drawFrame(i));
+                    }
+                };
             }
-
-            const results = await Promise.all(promises);
-            const loadedImages = results.filter((img): img is HTMLImageElement => img !== null);
-
-            setImages(loadedImages);
-            setImagesLoaded(true);
         };
 
         loadImages();
@@ -49,15 +62,15 @@ export default function ScrollyCanvas() {
 
     // initial draw
     useEffect(() => {
-        if (imagesLoaded && images.length > 0 && canvasRef.current) {
+        if (firstFrameLoaded && canvasRef.current) {
             drawFrame(0);
         }
-    }, [imagesLoaded]);
+    }, [firstFrameLoaded]);
 
 
     // Scrub through frames on scroll
     useEffect(() => {
-        if (!imagesLoaded || images.length === 0) return;
+        if (!firstFrameLoaded) return;
 
         const unsubscribe = scrollYProgress.on('change', (latest) => {
             // Calculate which frame to show
@@ -66,11 +79,12 @@ export default function ScrollyCanvas() {
                 Math.floor(latest * FRAME_COUNT)
             );
 
+            currentFrameIndex.current = frameIndex;
             requestAnimationFrame(() => drawFrame(frameIndex));
         });
 
         return () => unsubscribe();
-    }, [scrollYProgress, imagesLoaded, images]);
+    }, [scrollYProgress, firstFrameLoaded]);
 
     const drawFrame = (index: number) => {
         const canvas = canvasRef.current;
@@ -78,7 +92,24 @@ export default function ScrollyCanvas() {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const img = images[index];
+        let img = imagesRef.current[index];
+
+        // Progressive Loading Fallback: If exact frame isn't loaded yet, find the closest loaded frame.
+        if (!img) {
+            let closestDist = Infinity;
+            let closestImg = null;
+            for (let i = 0; i < FRAME_COUNT; i++) {
+                if (imagesRef.current[i]) {
+                    const dist = Math.abs(i - index);
+                    if (dist < closestDist) {
+                        closestDist = dist;
+                        closestImg = imagesRef.current[i];
+                    }
+                }
+            }
+            img = closestImg;
+        }
+
         if (!img) return;
 
         // Object-fit: cover mathematics
@@ -128,7 +159,7 @@ export default function ScrollyCanvas() {
 
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
-    }, [imagesLoaded, scrollYProgress])
+    }, [firstFrameLoaded, scrollYProgress])
 
     // Parallax Text Animations mapped to scroll progress
 
@@ -155,10 +186,10 @@ export default function ScrollyCanvas() {
                 />
 
                 {/* Loading State Overlay */}
-                {!imagesLoaded && (
+                {!firstFrameLoaded && (
                     <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#121212] flex-col gap-4">
                         <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Experience</p>
+                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Portfolio</p>
                     </div>
                 )}
 
