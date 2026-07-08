@@ -23,20 +23,12 @@ export default function ScrollyCanvas() {
         const loadImages = async () => {
             // 1. Load the very first frame immediately and await it
             const firstImg = new Image();
-            firstImg.src = `/sequence/frame_000_delay-0.041s.png`;
+            firstImg.src = `/sequence/frame_000_delay-0.041s.webp`;
 
-<<<<<<< HEAD
-            for (let i = 0; i < FRAME_COUNT; i++) {
-                const promise = new Promise<HTMLImageElement | null>((resolve) => {
-                    const img = new Image();
-                    const frameNum = i.toString().padStart(3, '0');
-                    img.src = `/sequence/frame_${frameNum}_delay-0.041s.webp`;
-=======
             await new Promise((resolve) => {
                 firstImg.onload = () => resolve(firstImg);
                 firstImg.onerror = () => resolve(null);
             });
->>>>>>> ace2cf467e7d0eee329b3f69e26d931477fb632b
 
             imagesRef.current[0] = firstImg;
             setFirstFrameLoaded(true);
@@ -45,7 +37,7 @@ export default function ScrollyCanvas() {
             for (let i = 1; i < FRAME_COUNT; i++) {
                 const img = new Image();
                 const frameNum = i.toString().padStart(3, '0');
-                img.src = `/sequence/frame_${frameNum}_delay-0.041s.png`;
+                img.src = `/sequence/frame_${frameNum}_delay-0.041s.webp`;
 
                 img.onload = () => {
                     imagesRef.current[i] = img;
