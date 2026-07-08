@@ -67,6 +67,8 @@ export default function Projects() {
                             <img
                                 src={project.image}
                                 alt={project.title}
+                                loading="lazy"
+                                decoding="async"
                                 className="object-cover w-full h-full brightness-[0.4] lg:brightness-[0.7] lg:group-hover:brightness-[0.4] transition-all duration-500"
                             />
                         </div>
