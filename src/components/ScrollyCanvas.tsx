@@ -197,7 +197,7 @@ export default function ScrollyCanvas() {
                             Namith K P
                         </h1>
                         <p className="text-xl md:text-2xl text-white/80 font-light tracking-wide drop-shadow-[0_0_10px_rgba(0,0,0,0.8)] mt-2">
-                            Engineering Student & Web Developer
+                            Engineering Student & Software Developer
                         </p>
                     </motion.div>
 
@@ -218,7 +218,7 @@ export default function ScrollyCanvas() {
                         className="absolute right-8 md:right-24 top-1/2 -translate-y-1/2 max-w-xl text-right"
                     >
                         <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]">
-                            I’ve Built 15+ Projects so far.
+                            I’ve Built 10+ Projects so far.
                         </h2>
                         <div className="h-1 w-24 bg-white/50 rounded ml-auto" />
                     </motion.div>
