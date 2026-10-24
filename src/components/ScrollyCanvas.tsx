@@ -1,16 +1,96 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { useScroll, motion, useTransform } from 'framer-motion';
+import { useScroll, motion, useTransform, useSpring } from 'framer-motion';
 
 const FRAME_COUNT = 192;
 
 export default function ScrollyCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imagesRef = useRef<(HTMLImageElement | null)[]>(new Array(FRAME_COUNT).fill(null));
-    const [firstFrameLoaded, setFirstFrameLoaded] = useState(false);
-    const currentFrameIndex = useRef(0);
+    const [imagesLoaded, setImagesLoaded] = useState(0);
+    const imagesRef = useRef<HTMLImageElement[]>([]);
+
+    const isLoaded = imagesLoaded === FRAME_COUNT;
+
+    // Preload images
+    useEffect(() => {
+        const loadImages = () => {
+            const loadedImages: HTMLImageElement[] = [];
+            let loadedCount = 0;
+
+            for (let i = 1; i <= FRAME_COUNT; i++) {
+                const img = new Image();
+                // Sequence format: 0001.jpg
+                const frameIndex = i.toString().padStart(4, '0');
+                img.src = `/sequence/frames/${frameIndex}.jpg`;
+                
+                img.onload = () => {
+                    loadedCount++;
+                    setImagesLoaded(loadedCount);
+                };
+                
+                loadedImages.push(img);
+            }
+            imagesRef.current = loadedImages;
+        };
+
+        loadImages();
+    }, []);
+
+    // Draw logic
+    const renderFrame = (frameIndex: number) => {
+        if (!canvasRef.current || !imagesRef.current[frameIndex]) return;
+        
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        const img = imagesRef.current[frameIndex];
+        
+        if (!ctx) return;
+
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+
+        // "object-fit: cover" math
+        const imgRatio = img.width / img.height;
+        const canvasRatio = canvas.width / canvas.height;
+        let renderW, renderH, offsetX = 0, offsetY = 0;
+
+        if (imgRatio > canvasRatio) {
+            renderH = canvas.height;
+            renderW = img.width * (canvas.height / img.height);
+            offsetX = (canvas.width - renderW) / 2;
+        } else {
+            renderW = canvas.width;
+            renderH = img.height * (canvas.width / img.width);
+            offsetY = (canvas.height - renderH) / 2;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, offsetX, offsetY, renderW, renderH);
+    };
+
+    // Draw initial frame and handle resize
+    useEffect(() => {
+        if (!isLoaded) return;
+        
+        // Draw the very first frame immediately
+        renderFrame(0);
+
+        // Keep current frame updated on resize
+        const handleResize = () => {
+            const latest = smoothProgress.get();
+            const frameIndex = Math.min(
+                FRAME_COUNT - 1,
+                Math.max(0, Math.floor(latest * FRAME_COUNT))
+            );
+            renderFrame(frameIndex);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isLoaded]);
 
     // Scroll Progress (0 to 1) from the container
     const { scrollYProgress } = useScroll({
@@ -18,140 +98,36 @@ export default function ScrollyCanvas() {
         offset: ['start start', 'end end'],
     });
 
-    // Load images on mount
+    // Add spring physics for smoother scrubbing
+    const smoothProgress = useSpring(scrollYProgress, {
+        stiffness: 50,
+        damping: 20,
+        restDelta: 0.001
+    });
+
+    // Scrub through images on scroll
     useEffect(() => {
-        const loadImages = async () => {
-            // 1. Load the very first frame immediately and await it
-            const firstImg = new Image();
-            firstImg.src = `/sequence/frame_000_delay-0.041s.webp`;
+        if (!isLoaded) return;
 
-            await new Promise((resolve) => {
-                firstImg.onload = () => resolve(firstImg);
-                firstImg.onerror = () => resolve(null);
-            });
+        let animationFrameId: number;
 
-            imagesRef.current[0] = firstImg;
-            setFirstFrameLoaded(true);
-
-            // 2. Load the rest in the background concurrently (no await!)
-            for (let i = 1; i < FRAME_COUNT; i++) {
-                const img = new Image();
-                const frameNum = i.toString().padStart(3, '0');
-                img.src = `/sequence/frame_${frameNum}_delay-0.041s.webp`;
-
-                img.onload = () => {
-                    imagesRef.current[i] = img;
-                    // If the user is currently looking at this frame but it was previously missing, draw it now.
-                    if (i === currentFrameIndex.current) {
-                        requestAnimationFrame(() => drawFrame(i));
-                    }
-                };
-            }
-        };
-
-        loadImages();
-    }, []);
-
-    // initial draw
-    useEffect(() => {
-        if (firstFrameLoaded && canvasRef.current) {
-            drawFrame(0);
-        }
-    }, [firstFrameLoaded]);
-
-
-    // Scrub through frames on scroll
-    useEffect(() => {
-        if (!firstFrameLoaded) return;
-
-        const unsubscribe = scrollYProgress.on('change', (latest) => {
-            // Calculate which frame to show
+        const unsubscribe = smoothProgress.on('change', (latest) => {
             const frameIndex = Math.min(
                 FRAME_COUNT - 1,
-                Math.floor(latest * FRAME_COUNT)
+                Math.max(0, Math.floor(latest * FRAME_COUNT))
             );
 
-            currentFrameIndex.current = frameIndex;
-            requestAnimationFrame(() => drawFrame(frameIndex));
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(() => {
+                renderFrame(frameIndex);
+            });
         });
 
-        return () => unsubscribe();
-    }, [scrollYProgress, firstFrameLoaded]);
-
-    const drawFrame = (index: number) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        let img = imagesRef.current[index];
-
-        // Progressive Loading Fallback: If exact frame isn't loaded yet, find the closest loaded frame.
-        if (!img) {
-            let closestDist = Infinity;
-            let closestImg = null;
-            for (let i = 0; i < FRAME_COUNT; i++) {
-                if (imagesRef.current[i]) {
-                    const dist = Math.abs(i - index);
-                    if (dist < closestDist) {
-                        closestDist = dist;
-                        closestImg = imagesRef.current[i];
-                    }
-                }
-            }
-            img = closestImg;
-        }
-
-        if (!img) return;
-
-        // Object-fit: cover mathematics
-        const canvasRatio = canvas.width / canvas.height;
-        const imgRatio = img.width / img.height;
-
-        let drawWidth = canvas.width;
-        let drawHeight = canvas.height;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (canvasRatio > imgRatio) {
-            drawHeight = canvas.width / imgRatio;
-            offsetY = (canvas.height - drawHeight) / 2;
-        } else {
-            drawWidth = canvas.height * imgRatio;
-            offsetX = (canvas.width - drawWidth) / 2;
-        }
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        // Add dark background so it blends smoothly if images have weird edges
-        ctx.fillStyle = "#121212";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-    };
-
-    // Re-draw on window resize
-    useEffect(() => {
-        const handleResize = () => {
-            const canvas = canvasRef.current;
-            if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            const latest = scrollYProgress.get();
-            const frameIndex = Math.min(
-                FRAME_COUNT - 1,
-                Math.floor(latest * FRAME_COUNT)
-            );
-            drawFrame(frameIndex);
-        }
-
-        // Call once to set initial size
-        handleResize();
-
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [firstFrameLoaded, scrollYProgress])
+        return () => {
+            unsubscribe();
+            cancelAnimationFrame(animationFrameId);
+        };
+    }, [smoothProgress, isLoaded]);
 
     // Parallax Text Animations mapped to scroll progress
 
@@ -169,19 +145,19 @@ export default function ScrollyCanvas() {
 
     return (
         <div ref={containerRef} className="relative w-full h-[500vh]">
-            <div className="sticky top-0 w-full h-screen overflow-hidden">
+            <div className="sticky top-0 w-full h-screen overflow-hidden bg-[#121212]">
 
-                {/* The Frame Sequence Canvas */}
+                {/* The Video Scrubber (Now a Canvas) */}
                 <canvas
                     ref={canvasRef}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                 />
 
                 {/* Loading State Overlay */}
-                {!firstFrameLoaded && (
-                    <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#121212] flex-col gap-4">
+                {!isLoaded && (
+                    <div className="absolute inset-0 z-50 flex items-center justify-center flex-col gap-4">
                         <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Portfolio</p>
+                        <p className="text-white/60 text-sm tracking-widest uppercase">Loading Portfolio ({Math.round((imagesLoaded / FRAME_COUNT) * 100)}%)</p>
                     </div>
                 )}
 

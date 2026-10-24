@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/private/',
         },
-        sitemap: 'https://namithkp.me/sitemap.xml',
+        sitemap: 'https://namith-kp.github.io/sitemap.xml',
     }
 }
